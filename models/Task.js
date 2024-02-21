@@ -10,7 +10,7 @@ const taskSchema = mongoose.Schema(
       enum: ["pending", "working", "review", "done", "archive", "deleted"],
     },
 
-    assignee: { type: mongoose.SchemaTypes.ObjectId, ref: "User" }, //one to one optional
+    assignee: { type: mongoose.SchemaTypes.ObjectId, ref: "User" },
   },
   {
     timestamps: true,
