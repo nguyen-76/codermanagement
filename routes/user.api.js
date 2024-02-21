@@ -1,36 +1,31 @@
 const express = require("express");
-const {
-  getAllUsers,
-  createUser,
-  updateUserById,
-  deleteUserById,
-} = require("../controllers/user.controller");
 const router = express.Router();
+const {
+  createUser,
+  getAllUsers,
+  getTaskByUserId,
+} = require("../controllers/user.controllers.js");
 
 /**
  * @route GET api/users
- * @description Get a list of users
- * @access private
- * @allowedQueries: name
+ * @description get list of user
+ * @access public
  */
 router.get("/", getAllUsers);
 
 /**
- * @route POST api/users
- * @description Create a new user
- * @access private, manager
- * @requiredBody: name
- */
-router.post("/", createUser);
-
-router.put("/:id", updateUserById);
-
-router.delete("/:id", deleteUserById);
-
-/**
- * @route GET api/users/:id
- * @description Get user by id
+ * @route GET api/users/
+ * @description get task of user
  * @access public
  */
+
+router.get("/:userId/tasks", getTaskByUserId);
+
+/**
+ * @route POST api/users
+ * @description create a user
+ * @access public
+ */
+router.post("/", createUser);
 
 module.exports = router;
