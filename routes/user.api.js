@@ -4,7 +4,7 @@ const {
   createUser,
   getAllUsers,
   getTaskByUserId,
-} = require("../controllers/user.controllers.js");
+} = require("../controllers/user.controller.js");
 
 /**
  * @route GET api/users

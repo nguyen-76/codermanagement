@@ -7,7 +7,7 @@ const {
   getTaskById,
   updateTaskStatusById,
   deleteTaskById,
-} = require("../controllers/task.controllers.js");
+} = require("../controllers/task.controller.js");
 
 /**
  * @route GET api/tasks
