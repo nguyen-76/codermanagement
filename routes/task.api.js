@@ -5,7 +5,7 @@ const {
   getAllTasks,
   addAssignee,
   getTaskById,
-  updateTaskStatusById,
+  updateTaskById,
   deleteTaskById,
 } = require("../controllers/task.controller.js");
 
