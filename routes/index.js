@@ -28,6 +28,9 @@ router.get("/template/:test", async (req, res, next) => {
   }
 });
 
-const fooRouter = require("./user.api.js");
-router.use("/foo", fooRouter);
+const userRouter = require("./user.api.js");
+router.use("/users", userRouter);
+
+const taskRouter = require("./task.api.js");
+router.use("/tasks", taskRouter);
 module.exports = router;
