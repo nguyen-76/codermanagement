@@ -1,26 +1,22 @@
 const { sendResponse, AppError } = require("../helpers/utils.js");
-
 const Task = require("../models/Task.js");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const taskController = {};
 
 taskController.createTask = async (req, res, next) => {
   //in real project you will getting info from req
-  let info = req.body;
+  const info = req.body;
 
   try {
     //always remember to control your inputs
     //check if body exist
-    if (!info) throw new AppError(402, "Bad Request", "Create Task Error");
-    //check if required fields exist
-    if (info.title && info.description && info.status) {
-      if (typeof info.title !== "string")
-        throw new AppError(402, "Bad Request", "Create Task Error");
-      if (!allowedStatus.includes(info.status)) {
-        throw new AppError(402, "Bad Request", "Wrong status");
-      }
-    } else {
+    if (!info.title || !info.description)
       throw new AppError(402, "Bad Request", "Create Task Error");
+    //check if required fields exist
+    const taskExisted = await Task.findOne({ name: info.title });
+    if (taskExisted) {
+      throw new AppError(400, "Bad request", "Task is existed");
     }
 
     //in real project you must also check if id (referenceTo) is valid as well as if document with given id is exist before any futher process
@@ -43,7 +39,7 @@ taskController.getAllTasks = async (req, res, next) => {
   //in real project you will getting condition from from req then construct the filter object for query
   // empty filter mean get all
   let { status, ...sort } = req.query;
-  let filter = {};
+  let filter = { isDeleted: false };
   const allowedSort = ["createdAt", "updatedAt"];
   const sortKeys = Object.keys(sort);
   try {
@@ -74,7 +70,6 @@ taskController.getAllTasks = async (req, res, next) => {
       });
       pipeline.push({ $sort: sort });
     }
-    console.log(pipeline);
 
     //mongoose query
     const listOfFound = await Task.aggregate(pipeline);
@@ -102,6 +97,8 @@ taskController.updateTaskById = async (req, res, next) => {
 
   const allowedStatus = ["pending", "working", "review", "done", "archive"];
   try {
+    if (!ObjectId.isValid(taskId))
+      throw new AppError(400, "Invalid ObjectId", "Bad request");
     if (!status)
       throw new AppError(402, "Bad Request", "Please provide new status");
     if (!allowedStatus.includes(status)) {
@@ -140,6 +137,8 @@ taskController.deleteTaskById = async (req, res, next) => {
   // empty target mean delete nothing
   const { taskId } = req.params;
   try {
+    if (!ObjectId.isValid(taskId))
+      throw new AppError(400, "Invalid ObjectId", "Bad request");
     const found = await Task.findById(taskId);
     if (!found) {
       throw new AppError(404, "Bad Request", "Task not found");
@@ -158,6 +157,9 @@ taskController.deleteTaskById = async (req, res, next) => {
 taskController.getTaskById = async (req, res, next) => {
   const { taskId } = req.params;
   try {
+    if (!ObjectId.isValid(taskId))
+      throw new AppError(400, "Invalid ObjectId", "Bad request");
+
     const found = await Task.findById(taskId);
     if (!found) {
       throw new AppError(404, "Bad Request", "Task not found");
@@ -175,6 +177,8 @@ taskController.addAssignee = async (req, res, next) => {
   const { taskId } = req.params;
   const { userId, option } = req.body;
   try {
+    if (!ObjectId.isValid(taskId))
+      throw new AppError(400, "Invalid ObjectId", "Bad request");
     let found = await Task.findById(taskId);
     if (!found) {
       throw new AppError(404, "Bad Request", "Task not found");
