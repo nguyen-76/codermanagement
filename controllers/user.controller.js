@@ -6,6 +6,7 @@ const {
 const User = require("../models/User.js");
 const Task = require("../models/Task.js");
 const allowedRole = ["manager", "employee"];
+const ObjectId = require("mongoose").Types.ObjectId;
 const userController = {};
 
 userController.createUser = async (req, res, next) => {
@@ -87,6 +88,8 @@ userController.getTaskByUserId = async (req, res, next) => {
   const { userId } = req.params;
 
   try {
+    if (!ObjectId.isValid(userId))
+      throw new AppError(400, "Invalid ObjectId", "Bad request");
     const foundUser = await User.findById(userId);
     if (!foundUser) {
       throw new AppError(404, "Bad Request", "User not found");
